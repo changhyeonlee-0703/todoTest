@@ -26,15 +26,16 @@ exports.getTodo = async (req, res) => {
 exports.putTodo = async (req, res) => {
     try{
         if (req.body.isDone === true || req.body.isDone === false){
-            const {todoArrIdx, isDone} = req.body;
-            const result = await todo.isDoneTodo(todoArrIdx, isDone);
-            console.log("1")
+            const todoId = req.params.id;
+            const {isDone} = req.body;
+            const result = await todo.isDoneTodo(todoId, isDone);
             res.status(200).json({message : result});
             
         }
         else{
-            const {todoArrIdx, work, color} = req.body;
-            const result = await todo.putTodo(todoArrIdx, work, color);
+            const todoId = req.params.id;
+            const {work, color} = req.body;
+            const result = await todo.putTodo(todoId, work, color);
             res.status(200).json({message : result});
         }
     }
@@ -45,8 +46,8 @@ exports.putTodo = async (req, res) => {
 
 exports.deleteTodo = async (req, res) => {
     try{
-        const {todoArrIdx} = req.body;
-        const result = await todo.deleteTodo(todoArrIdx); //userId
+        const todoId = req.params.id;
+        const result = await todo.deleteTodo(todoId); //userId
         res.status(200).json({message : result});
     }
     catch(err){

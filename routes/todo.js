@@ -7,7 +7,9 @@ const TodoController = require("../controller/todo");
 router
   .route("/")
   .post(TodoController.createTodo)
-  .get(TodoController.getTodo)
+  .get(TodoController.getTodo);
+
+router.route("/:id")
   .put(TodoController.putTodo)
   .delete(TodoController.deleteTodo);
 
