@@ -15,12 +15,4 @@ router.route("/:id")
   .put(TodoController.putTodo)
   .delete(TodoController.deleteTodo);
 
-
-// todoId로 받아올지
-// router
-//   .route("/todoId")
-//   .get(TodoController.getTodo)
-//   .put(TodoController.putTodo)
-//   .delete(TodoController.deleteTodo);
-
 module.exports = router;
