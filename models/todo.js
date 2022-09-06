@@ -1,108 +1,106 @@
 const Todo = require("../schemas/todo");
 const moment = require("moment");
-const todo = require("../schemas/todo");
-const { exists } = require("../schemas/todo");
 
 exports.createTodo = async (work, isDone, color) => {
-  try {
-    const existedTodo = await Todo.findOne({
-      createAt: moment().format("2022-09-01"),
-    });
+  const today = moment().startOf("day");
+  const existedTodo = await Todo.findOne({
+    createdAt: {
+      $gte: today.toDate(),
+      $lte: moment(today).endOf("day").toDate(),
+    },
+  });
 
-    if (existedTodo) {
-      existedTodo.todoArr.push({ work, isDone, color });
-      await existedTodo.save();
-      return "push success";
-    } else {
-      await Todo.create({ todoArr: [{ work, isDone, color }] });
-      return "create success";
-    }
-  } catch (err) {
-    return err;
+  if (existedTodo) {
+    existedTodo.todoArr.push({ work, isDone, color });
+    const result = await existedTodo.save();
+    return result.todoArr[result.todoArr.length - 1];
+  } else {
+    const result = await Todo.create({ todoArr: [{ work, isDone, color }] });
+    return result.todoArr[result.todoArr.length - 1];
   }
 };
 
-exports.getTodo = async () => {
-  try {
-    const existedTodo = await Todo.findOne({
-      createAt: moment().format("2022-09-01"),
-    });
-    if (existedTodo) {
-      return existedTodo;
-    } else {
-      return "오늘의 할일이 없습니다.";
-    }
-  } catch (err) {
-    return err;
+exports.getTodo = async (dayData) => {
+  const day = moment(dayData).startOf("day");
+  const existedTodo = await Todo.findOne({
+    createdAt: {
+      $gte: day.toDate(),
+      $lte: moment(day).endOf("day").toDate(),
+    },
+  });
+  if (existedTodo) {
+    return existedTodo;
+  } else {
+    return `${dayData} 에 저장된 할일 리스트가 없습니다.`;
   }
 };
 
 exports.putTodo = async (todoId, work, color) => {
-  try {
-    const existedTodo = await Todo.findOne({
-      createAt: moment().format("2022-09-01"),
+  const today = moment().startOf("day");
+  const existedTodo = await Todo.findOne({
+    createdAt: {
+      $gte: today.toDate(),
+      $lte: moment(today).endOf("day").toDate(),
+    },
+  });
+  let todoArrIdx = undefined;
+  if (existedTodo) {
+    existedTodo.todoArr.map((todo, idx) => {
+      if (todo._id.equals(todoId)) {
+        todoArrIdx = idx;
+      }
     });
-    let todoArrIdx = undefined;
-    if (existedTodo) {
-      existedTodo.todoArr.map((todo, idx) => {
-        if (todo._id.equals(todoId)) {
-          todoArrIdx = idx;
-        }
-      });
-      existedTodo.todoArr[todoArrIdx].work = work;
-      existedTodo.todoArr[todoArrIdx].color = color;
-      await existedTodo.save();
-      return "todo update success";
-    } else {
-      throw new Error("데이터가 없습니다.");
-    }
-  } catch (err) {
-    return err;
+    existedTodo.todoArr[todoArrIdx].work = work;
+    existedTodo.todoArr[todoArrIdx].color = color;
+    const result = await existedTodo.save();
+    return result.todoArr[todoArrIdx];
+  } else {
+    throw new Error("데이터가 없습니다.");
   }
 };
 
 exports.isDoneTodo = async (todoId, isDone) => {
-  try {
-    const existedTodo = await Todo.findOne({
-      createAt: moment().format("2022-09-01"),
+  const today = moment().startOf("day");
+  const existedTodo = await Todo.findOne({
+    createdAt: {
+      $gte: today.toDate(),
+      $lte: moment(today).endOf("day").toDate(),
+    },
+  });
+  let todoArrIdx = undefined;
+  if (existedTodo) {
+    existedTodo.todoArr.map((todo, idx) => {
+      if (todo._id.equals(todoId)) {
+        todoArrIdx = idx;
+      }
     });
-    let todoArrIdx = undefined;
-    if (existedTodo) {
-      existedTodo.todoArr.map((todo, idx) => {
-        if (todo._id.equals(todoId)) {
-          todoArrIdx = idx;
-        }
-      });
-      existedTodo.todoArr[todoArrIdx].isDone = isDone;
-      await existedTodo.save();
-      return "isdone update success";
-    } else {
-      throw new Error("데이터가 없습니다.");
-    }
-  } catch (err) {
-    return err;
+    existedTodo.todoArr[todoArrIdx].isDone = isDone;
+    const result = await existedTodo.save();
+    return result.todoArr[todoArrIdx];
+  } else {
+    throw new Error("데이터가 없습니다.");
   }
 };
 
 exports.deleteTodo = async (todoId) => {
-  try {
-    const existedTodo = await Todo.findOne({
-      createAt: moment().format("2022-09-01"),
+  const today = moment().startOf("day");
+  const existedTodo = await Todo.findOne({
+    createdAt: {
+      $gte: today.toDate(),
+      $lte: moment(today).endOf("day").toDate(),
+    },
+  });
+  let todoArrIdx = undefined;
+  if (existedTodo) {
+    existedTodo.todoArr.map((todo, idx) => {
+      if (todo._id.equals(todoId)) {
+        todoArrIdx = idx;
+      }
     });
-    let todoArrIdx = undefined;
-    if (existedTodo) {
-      existedTodo.todoArr.map((todo, idx) => {
-        if (todo._id.equals(todoId)) {
-          todoArrIdx = idx;
-        }
-      });
-      existedTodo.todoArr.splice(todoArrIdx, 1);
-      await existedTodo.save();
-      return "todo update success";
-    } else {
-      throw new Error("데이터가 없습니다.");
-    }
-  } catch (err) {
-    return err;
+    existedTodo.todoArr.splice(todoArrIdx, 1);
+    await existedTodo.save();
+    return true;
+  } else {
+    throw new Error("데이터가 없습니다.");
   }
 };

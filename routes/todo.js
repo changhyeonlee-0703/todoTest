@@ -6,7 +6,9 @@ const TodoController = require("../controller/todo");
 // userId와 날짜를 받아올지
 router
   .route("/")
-  .post(TodoController.createTodo)
+  .post(TodoController.createTodo);
+  
+router.route("/:day")
   .get(TodoController.getTodo);
 
 router.route("/:id")

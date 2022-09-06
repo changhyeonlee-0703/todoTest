@@ -16,8 +16,7 @@ const todosSchema = mongoose.Schema(
     //   default : moment().format("YYYY-MM-DD"),
     // }
   },
-  { timestamps : true}
-  // { timestamps: true }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Todos", todosSchema);
